@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pNMEAUDPReceiver config block
+
+ProcessConfig = pNMEAUDPReceiver
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

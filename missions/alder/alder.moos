@@ -14,13 +14,15 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB        @ NewConsole = false
-  Run = uSimMarineV22	@ NewConsole = false
-  Run = pNodeReporter	@ NewConsole = false
-  Run = pMarinePIDV22 @ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
-  Run = uProcessWatch @ NewConsole = false
-  Run = pHelmIvP      @ NewConsole = false
-  //Run = pOdometry     @ NewConsole = false
+  //Run = uSimMarineV22	@ NewConsole = false
+  //Run = pNodeReporter	@ NewConsole = false
+  //Run = pMarinePIDV22 @ NewConsole = false
+  //Run = pMarineViewer	@ NewConsole = false
+  //Run = uProcessWatch @ NewConsole = false
+  //Run = pHelmIvP      @ NewConsole = false
+ // Run = pOdometry     @ NewConsole = false
+ Run =pLogger        @ NewConsole = false
+ Run =pNMEAUDPReceiver        @ NewConsole = true
 }
 
 //------------------------------------------
@@ -69,7 +71,7 @@ ProcessConfig = pHelmIvP
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
 
-  //IVP_BEHAVIOR_DIR = ../../lib
+  IVP_BEHAVIOR_DIR = ../../lib
 
   ok_skew = any
   start_in_drive = false
@@ -140,6 +142,13 @@ ProcessConfig = pMarineViewer
   BUTTON_TWO = RETURN # RETURN=true
 }
 
+ProcessConfig = pOdometry
+{
+  AppTick	  = 4
+  CommsTick	= 4
+}
+
+
 //------------------------------------------
 // pNodeReporter config block
 
@@ -150,3 +159,23 @@ ProcessConfig = pNodeReporter
 
   vessel_type = kayak
 }
+
+ ProcessConfig = pLogger
+ {
+   AppTick   = 8
+   CommsTick = 8
+
+   AsyncLog = true
+   WildCardLogging = true
+ }
+
+  ProcessConfig = pNMEAUDPReceiver
+ {
+   AppTick   = 10
+   CommsTick = 10
+
+   udp_port =10110
+   moos_var =NMEA_IN
+   waypoint_var = WPT_UPDATE_NMEA
+   app_logging = log
+ }

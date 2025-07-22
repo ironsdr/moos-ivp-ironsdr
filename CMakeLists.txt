@@ -6,7 +6,7 @@
 #        Chris Gagner, and tips borrowed from Dave Billin
 #=======================================================================
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 PROJECT( IVP_EXTEND )
 
 set (CMAKE_CXX_STANDARD 11)
@@ -32,13 +32,13 @@ find_package(MOOS 10.0)
 INCLUDE_DIRECTORIES(${MOOS_INCLUDE_DIRS})
 
 #=======================================================================
-# Find the "moos-ivp" base directory
+# Find the "moos-ivp" base directory:MOOSIVP_SOURCE_TREE_BASE: /home/berry/moos-ivp
 #=======================================================================
-
+message(STATUS "MOOSIVP_SOURCE_TREE_BASE: ${MOOSIVP_SOURCE_TREE_BASE}")
 # Search for the moos-ivp folder
 find_path( MOOSIVP_SOURCE_TREE_BASE
            NAMES build-ivp.sh build-moos.sh configure-ivp.sh
-           PATHS "../moos-ivp" "../../moos-ivp" "../../moos-ivp/trunk/" "../moos-ivp/trunk/"
+           PATHS "../moos-ivp" "../../moos-ivp" "../../moos-ivp/trunk/" "../moos-ivp/trunk/" "../../moos-ivp/MOOS/MOOSGeodesy/libMOOSGeodesy/include/"
            DOC "Base directory of the MOOS-IvP source tree"
            NO_DEFAULT_PATH
 )
@@ -54,7 +54,10 @@ endif()
 #======================================================================
 
 FILE(GLOB IVP_INCLUDE_DIRS ${MOOSIVP_SOURCE_TREE_BASE}/ivp/src/lib_* )
-INCLUDE_DIRECTORIES(${IVP_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${IVP_INCLUDE_DIRS}
+${MOOSIVP_SOURCE_TREE_BASE}/MOOS/MOOSGeodesy/libMOOSGeodesy/include/
+
+)
 
 FILE(GLOB IVP_LIBRARY_DIRS ${MOOSIVP_SOURCE_TREE_BASE}/lib )
 LINK_DIRECTORIES(${IVP_LIBRARY_DIRS})

@@ -52,7 +52,7 @@ bool Relayer::OnNewMail(MOOSMSG_LIST &NewMail)
     string key = msg.GetKey();
 
     if(key == m_incoming_var) 
-      m_tally_recd++;
+      m_tally_recd = m_tally_recd +2;
   }
   return(true);
 }
@@ -87,7 +87,7 @@ bool Relayer::Iterate()
 
   unsigned int i, amt = (m_tally_recd - m_tally_sent);
   for(i=0; i<amt; i++) {
-    m_tally_sent++;
+    m_tally_sent=m_tally_sent+2;
     Notify(m_outgoing_var, m_tally_sent);
   }
   

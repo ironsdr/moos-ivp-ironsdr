@@ -1,0 +1,81 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+
+  idleflag  = WPTING = idle
+  runflag   = WPTING = running
+  endflag   = WPTING = end
+  inactiveflag = WPTING = inactive
+
+  UPDATES   = WPT_UPDATE_NMEA
+  perpetual = true
+
+               lead = 8
+        lead_damper = 1
+              speed = 2   // meters per second
+       capture_line = true
+     capture_radius = 8.0 
+        slip_radius = 8.0
+         //   points = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+           //  points =  1180,-1100 
+             repeat = 5
+
+
+ //reset_flags = WPT_UPDATE != $[WPT_UPDATE]  // 当WPT_UPDATE_NMEA变化时重置行为
+
+    visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
+}
+
+//----------------------------------------------
+Behavior=BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,-20
+}
+
+//----------------------------------------------
+Behavior=BHV_AvoidObstacleV21
+ {
+  name = avd_obstacles      // 行为名称前缀
+  pwt = 500                   // 优先级权重
+  condition = DEPLOY = true    // 触发条件
+  templating = spawn           // 允许动态生成多个实例
+  updates = OBSTACLE_ALERT     // 接收更新的MOOS变量
+
+  //行为依赖OBSTACLE_ALERT动态更新,优先级动态更新 > 静态配置，导致poly被覆盖。
+  // poly = pts={40,-150:40,-130:80,-130:80,-150}, label=one 
+
+  allowable_ttc = 3            // 允许的最小碰撞时间（秒）
+  //buffer_dist = 3              // 障碍物最小避让距离（米）
+  pwt_outer_dist = 15          // 行为生效的最大距离（米）
+  pwt_inner_dist = 5          // 行为权重达到最大的距离（米）
+  completed_dist = 18          // 行为完成（删除）的距离（米）
+
+  min_util_cpa_dist = 10
+  max_util_cpa_dist = 15
+}

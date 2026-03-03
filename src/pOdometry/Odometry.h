@@ -40,6 +40,9 @@ class Odometry : public AppCastingMOOSApp
 	double m_iter_dist;
 	bool m_initial_mail_x;
 	bool m_initial_mail_y;
+   double m_depth_thresh;
+   double m_current_depth;
+   double m_dist_at_depth_thresh;
 };
 
 #endif 

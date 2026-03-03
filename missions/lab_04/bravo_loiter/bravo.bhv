@@ -1,0 +1,74 @@
+// Name: D. Irons
+//--------    FILE: bravo.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   LOITER = true
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} 
+
+set MODE = LOITERING {
+  MODE = ACTIVE
+  LOITER = true
+} 
+
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name        = waypt_return
+  pwt         = 100
+  updates     = RETURN_UPDATES
+  condition   = MODE==RETURNING
+	endflag   = RETURN = false
+  endflag   = DEPLOY = false
+  endflag   = MISSION = complete
+	
+      speed = 2.5
+      point = 0,-20
+}
+
+//------------------------------------------------
+Behavior = BHV_Loiter
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = loiter               // example
+   pwt          = 100                   // default
+   condition    = MODE==LOITERING       // example
+   updates      = UP_LOITER        // example
+
+   // Parameters specific to this behavior
+   // ------------------------------------
+        acquire_dist = 10               // default
+      capture_radius = 3                // default  
+     center_activate = false            // default
+           clockwise = false             // default
+         slip_radius = 15               // default
+               speed = 2.5                // default
+       spiral_factor = -2               // default
+
+             polygon = radial:: x=100,y=-75,radius=30,pts=8  // example
+         post_suffix = HENRY                             // example
+
+        visual_hints = vertex_size  = 1             // default
+        visual_hints = edge_size    = 1             // default
+        visual_hints = vertex_color = dodger_blue   // default
+        visual_hints = edge_color   = white         // default
+        visual_hints = nextpt_color = yellow        // default
+        visual_hints = nextpt_lcolor = aqua         // default
+        visual_hints = nextpt_vertex_size = 5       // default
+        visual_hints = label        = zone1         // example
+        duration = 150
+        endflag = RETURN = true
+}
+
+

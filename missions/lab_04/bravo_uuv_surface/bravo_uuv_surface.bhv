@@ -1,0 +1,261 @@
+// Name: D. Irons
+//--------    FILE: bravo_uuv_surface.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   LOITER = true
+initialize   REGION = east
+initialize   SURF = false
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} 
+
+set MODE = LOITERING_EAST {
+  MODE = ACTIVE
+  LOITER = true
+  REGION = east
+  SURF = false
+} 
+
+set MODE = LOITERING_WEST {
+  MODE = ACTIVE
+  LOITER = true
+  REGION = west
+  SURF =false
+}
+
+set MODE = PERIOD_SURF {
+  MODE = ACTIVE
+  LOITER = false
+  SURF = true
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name        = waypt_return
+  pwt         = 100
+  updates     = RETURN_UPDATES
+  condition   = MODE==RETURNING
+  endflag     = RETURN = false
+  endflag     = DEPLOY = false
+  endflag     = MISSION = complete
+	
+      speed = 2.5
+      point = 0,-20
+}
+
+//------------------------------------------------
+Behavior = BHV_Loiter
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = loiter_east               // example
+   pwt          = 100                   // default
+   condition    = MODE==LOITERING_EAST       // example
+   updates      = UP_LOITER_E        // example
+   duration_reset = EAST_TIMER = true
+   duration_idle_decay = false
+   // Parameters specific to this behavior
+   // ------------------------------------
+        acquire_dist = 10               // default
+      capture_radius = 3                // default  
+     center_activate = false            // default
+           clockwise = best             // default
+         slip_radius = 15               // default
+               speed = 2.5                // default
+       spiral_factor = -2               // default
+        polygon = radial:: x=160,y=-50,radius=20,pts=8  // example
+        post_suffix = EAST                             // example
+        perpetual=true
+        visual_hints = vertex_size  = 1             // default
+        visual_hints = edge_size    = 1             // default
+        visual_hints = vertex_color = dodger_blue   // default
+        visual_hints = edge_color   = white         // default
+        visual_hints = nextpt_color = yellow        // default
+        visual_hints = nextpt_lcolor = aqua         // default
+        visual_hints = nextpt_vertex_size = 5       // default
+        visual_hints = label        = zone_east         // example
+        duration = 250
+        endflag = EAST_TIMER = true
+        endflag = REGION = west
+}
+
+//------------------------------------------------
+Behavior = BHV_Loiter
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = loiter_west               // example
+   pwt          = 100                   // default
+   condition    = MODE==LOITERING_WEST       // example
+   updates      = UP_LOITER_W       // example
+   duration_reset = WEST_TIMER = true
+   duration_idle_decay = false
+   // Parameters specific to this behavior
+   // ------------------------------------
+        acquire_dist = 10               // default
+      capture_radius = 3                // default  
+     center_activate = false            // default
+           clockwise = best             // default
+         slip_radius = 15               // default
+               speed = 2.5                // default
+       spiral_factor = -2               // default
+        polygon = radial:: x=100,y=-75,radius=30,pts=8  // example
+        post_suffix = WEST                             // example
+        perpetual = true
+        visual_hints = vertex_size  = 1             // default
+        visual_hints = edge_size    = 1             // default
+        visual_hints = vertex_color = dodger_blue   // default
+        visual_hints = edge_color   = white         // default
+        visual_hints = nextpt_color = yellow        // default
+        visual_hints = nextpt_lcolor = aqua         // default
+        visual_hints = nextpt_vertex_size = 5       // default
+        visual_hints = label        = zone_west         // example
+        duration = 150
+        endflag = WEST_TIMER = true
+        endflag = REGION = east
+}
+//Behavior = BHV_StationKeep
+//{
+//   // General Behavior Parameters
+//   // ---------------------------
+//   name         = surf          // example
+//   pwt          = 100                   // default
+//   condition    = MODE==PERIOD_SURF        // example
+//   inactiveflag = STATIONING = false    // example
+//   activeflag   = STATIONING = true     // example
+//   duration_reset = STATION_TIMER = true
+//
+//   // Parameters specific to this behavior
+//   // ------------------------------------
+//      center_activate = true   // default
+//	inner_radius = 15
+//	duration = 60
+//	perpetual = true
+//	endflag = SURF = false
+//	endflag = LOITER = true
+//        endflag = REGION = west
+//	endflag = STATION_TIMER = true
+//         visual_hints = vertex_size  = 1           // default
+//         visual_hints = edge_color   = light_blue  // default
+//         visual_hints = edge_size    = 1           // default
+//         visual_hints = label_color  = white       // default
+//         visual_hints = vertex_color = red         // default
+//}
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name        = surf
+  pwt         = 100
+  updates     = SURF_UPDATE
+  condition   = MODE==PERIOD_SURF
+  inactiveflag = STATIONING = false
+  activeflag = STATIONING = true
+  duration = 60
+  perpetual = true
+  duration_reset = STATION_TIMER = true
+      speed = 0
+      points = 0,0 
+  endflag = SURF = false
+  endflag = LOITER = true
+  endflag = STATION_TIMER = true
+}
+
+
+//DEPTH
+Behavior = BHV_ConstantDepth
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = dpeth_east   // example
+   pwt          = 100                // default
+   condition    = MODE==LOITERING_EAST    // example
+   updates      = DEPTH_EAST  // example
+
+   // Parameters specific to this behavior
+   // ------------------------------------
+            basewidth = 100          // default
+                depth = 10            // default
+                duration = no-time-limit
+   depth_mismatch_var = DEPTH_DIFF_1  // example
+            peakwidth = 3            // default
+          summitdelta = 50           // default
+          perpetual = true
+ }
+Behavior = BHV_ConstantDepth
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = depth_west   // example
+   pwt          = 100                // default
+   condition    = MODE==LOITERING_WEST    // example
+   updates      = DEPTH_WEST  // example
+
+   // Parameters specific to this behavior
+   // ------------------------------------
+            basewidth = 100          // default
+                depth = 30            // default
+                duration = no-time-limit
+   depth_mismatch_var = DEPTH_DIFF_2   // example
+            peakwidth = 3            // default
+          summitdelta = 50           // default
+          perpetual = true
+}
+Behavior = BHV_ConstantDepth
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = depth_general   // example
+   pwt          = 100                // default
+   condition = MODE==RETURNING
+   updates      = DEPTH_GENERAL  // example
+
+   // Parameters specific to this behavior
+   // ------------------------------------
+            basewidth = 100          // default
+                depth = 0            // default
+   depth_mismatch_var = DEPTH_DIFF_3   // example
+   duration = no-time-limit
+            peakwidth = 3            // default
+          summitdelta = 50           // default
+}
+Behavior = BHV_ConstantDepth
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = depth_surf   // example
+   pwt          = 100                // default
+   condition = MODE==PERIOD_SURF
+   updates      = DEPTH_SURF  // example
+
+   // Parameters specific to this behavior
+   // ------------------------------------
+            basewidth = 100          // default
+                depth = 0            // default
+   depth_mismatch_var = DEPTH_DIFF_4   // example
+   duration = no-time-limit
+            peakwidth = 3            // default
+          summitdelta = 50           // default
+}
+//TIMERS
+Behavior = BHV_Timer
+ {
+   // General Behavior Parameters
+   // ---------------------------
+   name         = 200_surf            // default
+   condition = SURF==false
+   duration     = 200                  // example
+   perpetual = true
+   endflag = SURF=true
+   endflag = LOITER = false
+   // Parameters specific to this behavior
+   // ------------------------------------
+   // None
+ }

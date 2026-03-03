@@ -26,6 +26,9 @@ Odometry::Odometry()
 	m_iter_dist = 0;
 	m_initial_mail_x = false;
 	m_initial_mail_y = false;
+  m_depth_thresh = 0;
+  m_current_depth = 0;
+  m_dist_at_depth_thresh = 0;
 }
 
 //---------------------------------------------------------
@@ -56,7 +59,7 @@ bool Odometry::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
 #endif
-//NAV_X, NAV_Y
+//NAV_X, NAV_Y, NAV_DEPTH
 if (key == "NAV_X") {
 	m_current_x = msg.GetDouble();
 	m_initial_mail_x = true;
@@ -65,17 +68,16 @@ else if (key == "NAV_Y"){
 	m_current_y = msg.GetDouble();
 	m_initial_mail_y = true;
 }
+else if (key == "NAV_DEPTH") 
+       m_current_depth = msg.GetDouble();
 else if(key == "FOO") 
        cout << "great!";
-
 else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
-     
-  }
-	
+       }
    return(true);
+   
 }
-
 //---------------------------------------------------------
 // Procedure: OnConnectToServer()
 
@@ -106,12 +108,17 @@ if (m_initial_mail_x && m_initial_mail_y) {
 		m_iter_dist = std::sqrt(dx*dx + dy*dy); 
 		//iterate the distance
 		m_total_distance += m_iter_dist;
+    if (m_current_depth >= m_depth_thresh) {
+      m_dist_at_depth_thresh += m_iter_dist;}
 		//update position with new position
 		m_previous_x = m_current_x;
 		m_previous_y = m_current_y;}
 }
+
   AppCastingMOOSApp::PostReport();
   	Notify("ODOMETRY_DIST", m_total_distance);
+    Notify("m_depth_thresh", m_depth_thresh);
+    Notify("ODOMETRY_DIST_AT_DEPTH", m_dist_at_depth_thresh);
   return(true);
 }
 
@@ -136,22 +143,19 @@ bool Odometry::OnStartUp()
     string value = line;
 
     bool handled = false;
-    if(param == "foo") {
-      handled = true;
+    if (param == "depth_thresh") {
+      m_depth_thresh = atof(value.c_str());
+      if (m_depth_thresh > 0) 
+        handled=true;
     }
-    else if(param == "bar") {
-      handled = true;
-    }
-
     if(!handled)
       reportUnhandledConfigWarning(orig);
 
   }
   
-  registerVariables();	
+  registerVariables();
   return(true);
 }
-
 //---------------------------------------------------------
 // Procedure: registerVariables()
 
@@ -161,6 +165,7 @@ void Odometry::registerVariables()
   // Register("FOOBAR", 0);
   Register("NAV_X", 0);
   Register("NAV_Y", 0); 
+  Register("NAV_DEPTH", 0);
 }
 
 
@@ -170,16 +175,19 @@ void Odometry::registerVariables()
 bool Odometry::buildReport() 
 {
   m_msgs << "============================================" << endl;
-  m_msgs << "File:                                       " << endl;
+  m_msgs << "File: bravo_loiter_uuv.moos                 " << endl;
   m_msgs << "============================================" << endl;
   m_msgs << "Total Distance Traveled" <<endl;
   m_msgs << m_total_distance << endl;
-
-  ACTable actab(4);
-  actab << "Alpha | Bravo | Charlie | Delta";
-  actab.addHeaderLines();
-  actab << "one" << "two" << "three" << "four";
-  m_msgs << actab.getFormattedString();
+  m_msgs << "dist below depth threshold" << endl;
+  m_msgs <<  << endl;
+  m_msgs << "depth threshold" << endl;
+  m_msgs << m_depth_thresh << endl;
+  //ACTable actab(4);
+  //actab << "Alpha | Bravo | Charlie | Delta";
+  //actab.addHeaderLines();
+  //actab << "one" << "two" << "three" << "four";
+  //m_msgs << actab.getFormattedString();
 
 
   return(true);

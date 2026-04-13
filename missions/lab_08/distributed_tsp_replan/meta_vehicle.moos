@@ -1,0 +1,69 @@
+ServerHost = localhost
+ServerPort = $(MOOS_PORT)
+Community  = $(VNAME)
+
+#include plugs.moos <origin_warp>
+
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 50
+   
+  Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
+  Run = uSimMarineV22   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldNodeBroker  @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
+  Run = pGenPath        @ NewConsole = false
+
+}
+
+ProcessConfig = pRealm
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  hist_var = VISIT_POINT
+}
+
+ProcessConfig = pGenPath
+{
+  AppTick   = 4
+  CommsTick = 4
+}
+// #include plug_uSimMarine.moosi
+// #include plug_pLogger.moos
+// #include plug_pNodeReporter.moos
+// #include plug_pMarinePID.moos
+// #include plug_pHelmIvP.moos
+// #include plug_uProcessWatch.moos
+// #include plug_pShare.moos
+// #include plug_pHostInfo.moos
+// #include plug_uFldNodeBroker.moos
+
+
+
+// #ifdef XMODE SIM
+#include plugs.moos <uSimMarineV22>
+// #elseifdef XMODE M300
+//   #include plugs.moos <iM300>
+// #endif
+
+#include plugs.moos <pShare>
+#include plugs.moos <pHostInfo>
+#include plugs.moos <pLogger>
+#include plugs.moos <uProcessWatch>
+#include plugs.moos <uFldNodeBroker>
+
+// Keep these as individual files ONLY IF they are not in your plugs.moos yet
+#include plug_pNodeReporter.moos
+#include plug_pMarinePID.moos
+#include plug_pHelmIvP.moos

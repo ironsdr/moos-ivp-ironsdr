@@ -73,7 +73,8 @@ echo "Launching Shoreside MOOS Community. WARP is" $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
 echo "Launching $VNAME1 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_$VNAME1.moos >& /dev/null &
-echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
+sleep 30
+echo "Launching $VNAME2 MOOS Community (delayed 30s). WARP is" $TIME_WARP
 pAntler targ_$VNAME2.moos >& /dev/null &
 echo "Done"
 
